@@ -19,9 +19,16 @@ import br.com.umdesenvolvedor.restteste.exceptions.ApiErros;
 import br.com.umdesenvolvedor.restteste.interfaces.IBookService;
 import br.com.umdesenvolvedor.restteste.model.Book;
 import br.com.umdesenvolvedor.restteste.model.BookDTO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/books")
+@Api("Book API")
+@Slf4j
 public class BookController {
 
 	@Autowired
@@ -32,9 +39,14 @@ public class BookController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
+	@ApiOperation("Cria um novo livro")
+	@ApiResponses({
+		@ApiResponse(code = 401, message = "Você não tem autorização para realizar esta operação")
+	})
 	public BookDTO create(@RequestBody @Valid BookDTO dto) {
 		Book entity = modelMapper.map(dto, Book.class);
 		entity = service.save(entity);
+		log.info("Criado book com o código {}", entity.getId());
 		return modelMapper.map(entity, BookDTO.class);
 	}
 	
